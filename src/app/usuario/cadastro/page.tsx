@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import api from '@/utils/api'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
@@ -17,6 +17,24 @@ export default function CadastroUsuario() {
 	const [erro, setErro] = useState<string | null>(null)
 	const [emailErro, setEmailErro] = useState('')
 	const [carregando, setCarregando] = useState(false)
+  	const [verificandoAuth, setVerificandoAuth] = useState(true)
+
+	useEffect(() => {
+		const token = localStorage.getItem('token')
+		if (token) {
+			router.replace('/painel') // redireciona se já estiver logado
+		} else {
+			setVerificandoAuth(false) // libera a tela se não estiver logado
+		}
+	}, [])
+
+	if (verificandoAuth) {
+		return (
+			<div className="flex items-center justify-center min-h-screen bg-slate-900">
+				<p className="text-white font-bold">Aguarde...</p>
+			</div>
+		)
+	}
 
 
 	const handleCadastro = async (e: React.FormEvent) => {
@@ -35,7 +53,7 @@ export default function CadastroUsuario() {
 
 		try {
 			await api.post('/auth/registro', { nome, email, senha })
-			toast.success(`Usuário ${nome} foi cadastrado com sucesso!`, {duration: 5000})
+			toast.success(`Usuário ${nome} foi cadastrado com sucesso!`, { duration: 5000 })
 			router.push('/usuario/login')
 		} catch (err: any) {
 			setErro(err?.response?.data?.error || 'Erro ao cadastrar usuário')
@@ -93,6 +111,15 @@ export default function CadastroUsuario() {
 				<button type="submit" disabled={carregando} className="disabled:opacity-50 w-full font-semibold text-white p-2 rounded bg-orange-500 hover:bg-orange-600 cursor-pointer transition duration-200">
 					{carregando ? 'Aguarde...' : 'Cadastrar'}
 				</button>
+
+				<div className='flex flex-col items-center'>
+					<p className="text-sm text-slate-600">
+						Já possui uma conta?{' '}
+						<a href="/usuario/login" className="text-orange-500 font-bold hover:underline">
+							Clique aqui para entrar
+						</a>
+					</p>
+				</div>
 			</form>
 		</div>
 	)
