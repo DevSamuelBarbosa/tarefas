@@ -3,7 +3,7 @@ const ambiente = process.env.NEXT_PUBLIC_APP_ENVIRONMENT === 'production'
 
 const nextConfig: NextConfig = {
     devIndicators: false,
-    output: "export",
+    //output: "export",
     images: {
         unoptimized: true,
     },

@@ -1,7 +1,26 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
+
 export default function Home() {
+	const router = useRouter()
+
+	useEffect(() => {
+		const token = localStorage.getItem('token')
+
+		if (token) {
+			router.replace('/painel')
+		} else {
+			router.replace('/usuario/login')
+		}
+	}, [router])
+
 	return (
-		<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-            <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium cum quia distinctio libero, eos earum eveniet aperiam fugit, quis blanditiis non beatae voluptatum minus dolores veniam! Saepe veritatis sapiente quod?</h1>
+		<div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white">
+			<Loader2 className="animate-spin mb-4" size={40} />
+			<p className="text-xl font-medium">Aguarde</p>
 		</div>
-	);
+	)
 }

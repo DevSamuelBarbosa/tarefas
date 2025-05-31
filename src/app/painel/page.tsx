@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import api from '@/utils/api'
 import { useRouter } from 'next/navigation'
-import { PlusCircle } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import Header from '@/components/Header'
+import Link from 'next/link'
+import { formatarData, statusEstilizacao, textoStatus } from '@/utils/utils'
 
 
 interface Tarefa {
@@ -40,13 +42,13 @@ export default function Painel() {
 		<>
 			<Header />
 			<div className="min-h-screen bg-slate-900 p-6 text-white">
-				<div className="max-w-4xl mx-auto">
+				<div className="max-w-6xl mx-auto">
 					<div className="flex items-center justify-between mb-6">
-						<h1 className="text-2xl font-bold">Suas Tarefas</h1>
-						<button onClick={() => router.push('/painel/nova')}
-							className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded transition">
-							<PlusCircle size={20} />
-							Nova Tarefa
+						<h1 className="text-2xl font-bold">Minhas tarefas</h1>
+						<button onClick={() => router.push('/tarefas/cadastrar')}
+							className="flex items-center gap-2 font-semibold text-white text-sm px-2 py-1 rounded bg-orange-500 hover:bg-orange-600 cursor-pointer transition duration-200">
+							<Plus size={14} />
+							Nova tarefa
 						</button>
 					</div>
 
@@ -55,21 +57,23 @@ export default function Painel() {
 					) : tarefas.length === 0 ? (
 						<p>Você ainda não tem tarefas.</p>
 					) : (
-						<ul className="space-y-4">
+						<ul className="flex flex-col gap-4">
 							{tarefas.map((tarefa) => (
-								<li key={tarefa.id} className="bg-white text-slate-800 p-4 rounded-lg shadow-md">
-									<div className="flex justify-between items-start">
-										<div>
-											<h2 className="text-lg font-semibold">{tarefa.titulo}</h2>
-											{tarefa.descricao && <p className="text-sm text-slate-600 mt-1">{tarefa.descricao}</p>}
-										</div>
-										<span className="text-sm px-2 py-1 rounded bg-slate-200 text-slate-700">
-											{tarefa.status}
-										</span>
-									</div>
-									<p className="text-xs text-slate-500 mt-2">
-										Criada em: {new Date(tarefa.criada_em).toLocaleString()}
-									</p>
+								<li key={tarefa.id}>
+                                    <Link href={`/tarefas/${tarefa.id}`} className="flex flex-col bg-slate-100 rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <h2 className="text-lg text-slate-900 font-semibold">{tarefa.titulo}</h2>
+                                                {tarefa.descricao && <p className="text-sm text-slate-600 mt-1">{tarefa.descricao}</p>}
+                                            </div>
+                                            <span className={`text-sm px-2 py-1 rounded ${statusEstilizacao(tarefa.status)}`}>
+                                                {textoStatus(tarefa.status)}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-slate-500 mt-2">
+                                            Criada em: {formatarData(tarefa.criada_em)}
+                                        </p>
+                                    </Link>
 								</li>
 							))}
 						</ul>
