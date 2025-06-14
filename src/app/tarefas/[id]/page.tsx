@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import api from '@/utils/api'
 import { toast } from 'react-hot-toast'
-import { ArrowLeft, Play, Pause, CheckCircle, Trash2, Loader2 } from 'lucide-react'
+import { ArrowLeft, Play, Pause, Trash2, Loader2, CheckCircleIcon, SaveIcon } from 'lucide-react'
 import Header from '@/components/Header'
 import Link from 'next/link'
 import { formatarData, formatarTempo, statusEstilizacao, textoStatus } from '@/utils/utils'
@@ -17,6 +17,9 @@ export default function TarefaDetalhe() {
 	const [tarefa, setTarefa] = useState<any>(null)
 	const [carregando, setCarregando] = useState(true)
 	const [dialogAberto, setDialogAberto] = useState(false)
+    const [titulo, setTitulo] = useState('')
+    const [descricao, setDescricao] = useState('')
+	const [editado, setEditado] = useState(false)
 
 	useEffect(() => {
 		const token = localStorage.getItem('token')
@@ -28,10 +31,24 @@ export default function TarefaDetalhe() {
 		api.get(`/tarefas/${id}`, {
 			headers: { Authorization: `Bearer ${token}` },
 		})
-			.then((res) => setTarefa(res.data))
+			.then((res) => {
+				setTarefa(res.data)
+				setTitulo(res.data.titulo)
+				setDescricao(res.data.descricao)
+			})
 			.catch(() => toast.error('Erro ao carregar tarefa'))
 			.finally(() => setCarregando(false))
 	}, [id, router])
+
+	useEffect(() => {
+		if (!tarefa) return
+
+		if (titulo !== tarefa.titulo || descricao !== tarefa.descricao) {
+			setEditado(true)
+		} else {
+			setEditado(false)
+		}
+	}, [titulo, descricao, tarefa])
 
 	const atualizarStatus = async (acao: 'iniciar' | 'pausar' | 'concluir') => {
 		try {
@@ -102,6 +119,31 @@ export default function TarefaDetalhe() {
 		}
 	}
 
+	const salvarEdicao = async () => {
+		try {
+			await api.put(`/tarefas/editar/${id}`, {
+				titulo,
+				descricao
+			}, {
+				headers: {
+				Authorization: `Bearer ${localStorage.getItem('token')}`
+			}
+			})
+			setEditado(false)
+
+			toast.success('Alterações salvas com sucesso!')
+			setTarefa((prev: any) => ({
+				...prev,
+				titulo,
+				descricao,
+				atualizada_em: new Date().toISOString()
+			}))
+
+		} catch (error) {
+			console.error('Erro ao salvar alterações:', error)
+		}
+	}
+
 	if (carregando) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white">
@@ -132,20 +174,41 @@ export default function TarefaDetalhe() {
 				</Link>
 
 				<div className="flex flex-col gap-4 bg-slate-800 rounded-xl p-6 shadow-md">
-					<div className="flex justify-between items-center">
-						<h1 className="text-2xl font-bold text-slate-100">{tarefa.titulo}</h1>
+					<div className="flex justify-between items-start gap-4">
+						<div className="flex-1">
+							<input
+								value={titulo}
+								onChange={(e) => setTitulo(e.target.value)}
+								className="bg-slate-700 text-white font-bold text-xl p-2 rounded w-full outline-none"
+							/>
+						</div>
+
 						<span className={`text-base font-semibold px-2 py-1 rounded ${statusEstilizacao(tarefa.status)}`}>
 							{textoStatus(tarefa.status)}
 						</span>
 					</div>
-					<p className="text-base text-slate-300">{tarefa.descricao}</p>
 
-					<div className="flex flex-col sm:flex-row gap-6 border-t border-slate-700 pt-4 mt-4">
-						<p className="text-sm font-normal text-slate-300">Tempo total: <span className="text-white text-sm font-semibold">{formatarTempo(tarefa.tempo_total)}</span></p>
-						<p className="text-sm font-normal text-slate-300">Criada em: <span className="text-white text-sm font-semibold">{formatarData(tarefa.criada_em)}</span></p>
-						<p className="text-sm font-normal text-slate-300">Atualizada em: <span className="text-white text-sm font-semibold">{formatarData(tarefa.atualizada_em)}</span></p>
-						{tarefa.status == 'concluída' && (
-							<p className="text-sm font-normal text-slate-300">Concluída em: <span className="text-white text-sm font-semibold">{formatarData(tarefa.finalizada_em)}</span></p>
+					<textarea
+						value={descricao}
+						onChange={(e) => setDescricao(e.target.value)}
+						className="bg-slate-700 text-white text-base p-2 rounded resize-none min-h-[100px] outline-none"
+					/>
+
+					{editado && (
+						<div className="flex justify-end">
+							<button onClick={salvarEdicao} className="bg-orange-500 hover:bg-orange-600 px-2 py-1 rounded flex items-center gap-2 text-white font-semibold text-sm transition cursor-pointer">
+								<SaveIcon size={16} /> Salvar alterações
+							</button>
+						</div>
+					)}
+
+
+					<div className="flex flex-col sm:flex-row gap-6 border-t border-slate-700 pt-4 mt-4 text-sm text-slate-300">
+						<p>Tempo total: <span className="text-white font-semibold">{formatarTempo(tarefa.tempo_total)}</span></p>
+						<p>Criada em: <span className="text-white font-semibold">{formatarData(tarefa.criada_em)}</span></p>
+						<p>Atualizada em: <span className="text-white font-semibold">{formatarData(tarefa.atualizada_em)}</span></p>
+						{tarefa.status === 'concluída' && (
+							<p>Concluída em: <span className="text-white font-semibold">{formatarData(tarefa.finalizada_em)}</span></p>
 						)}
 					</div>
 
@@ -157,7 +220,7 @@ export default function TarefaDetalhe() {
 							<Pause size={18} />
 						</button>
 						<button onClick={() => atualizarStatus('concluir')} className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded flex items-center gap-2 cursor-pointer transition duration-300">
-							<CheckCircle size={18} />
+							<CheckCircleIcon size={18} />
 						</button>
 						<button onClick={() => setDialogAberto(true)} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded flex items-center gap-2 cursor-pointer transition duration-300">
 							<Trash2 size={18} />

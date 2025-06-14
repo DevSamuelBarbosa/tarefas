@@ -19,3 +19,7 @@ body {
 html {
     scroll-behavior: smooth;
 }
+
+:focus {
+    outline: none;
+}

@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import Header from '@/components/Header'
 import Link from 'next/link'
-import { formatarData, statusEstilizacao, textoStatus } from '@/utils/utils'
+import { formatarData, formatarTempo, statusEstilizacao, textoStatus } from '@/utils/utils'
 
 
 interface Tarefa {
@@ -16,6 +16,7 @@ interface Tarefa {
 	descricao?: string
 	status: string
 	criada_em: string
+    tempo_total: number
 }
 
 export default function Painel() {
@@ -60,19 +61,24 @@ export default function Painel() {
 						<ul className="flex flex-col gap-4">
 							{tarefas.map((tarefa) => (
 								<li key={tarefa.id}>
-                                    <Link href={`/tarefas/${tarefa.id}`} className="flex flex-col bg-slate-100 rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                                    <Link href={`/tarefas/${tarefa.id}`} className="flex flex-col bg-slate-800 rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <h2 className="text-lg text-slate-900 font-semibold">{tarefa.titulo}</h2>
-                                                {tarefa.descricao && <p className="text-sm text-slate-600 mt-1">{tarefa.descricao}</p>}
+                                                <h2 className="text-lg text-slate-100 font-semibold">{tarefa.titulo}</h2>
+                                                <p className="text-sm text-slate-300 mt-1">
+                                                    {tarefa.descricao && tarefa.descricao.length > 150
+                                                        ? `${tarefa.descricao.substring(0, 150)}...`
+                                                        : tarefa.descricao || 'Sem descrição'}
+                                                </p>
                                             </div>
-                                            <span className={`text-sm px-2 py-1 rounded ${statusEstilizacao(tarefa.status)}`}>
+                                            <span className={`text-sm font-semibold px-2 py-1 rounded ${statusEstilizacao(tarefa.status)}`}>
                                                 {textoStatus(tarefa.status)}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-500 mt-2">
-                                            Criada em: {formatarData(tarefa.criada_em)}
-                                        </p>
+                                        <div className="flex flex-row justify-start items-start gap-6 mt-4 border-t border-slate-700">
+                                            <p className="text-xs text-slate-300 mt-2">Criada em: <span className="text-white text-xs font-semibold">{formatarData(tarefa.criada_em)}</span></p>
+                                            <p className="text-xs text-slate-300 mt-2">Tempo total: <span className="text-white text-xs font-semibold">{formatarTempo(tarefa.tempo_total)}</span></p>
+                                        </div>
                                     </Link>
 								</li>
 							))}
