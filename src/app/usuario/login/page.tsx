@@ -54,7 +54,7 @@ export default function LoginUsuario() {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 p-4">
 			<h1 className="text-2xl font-bold mb-4">Entrar na minha conta</h1>
-			<form onSubmit={handleLogin} className="w-3/12 flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md">
+			<form onSubmit={handleLogin} className="w-full md:w-3/5 lg:w-5/12 xl:w-4/12 2xl:w-1/4 flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md">
 				<div>
 					<label className="block text-sm text-slate-700 font-medium">E-mail</label>
 					<input

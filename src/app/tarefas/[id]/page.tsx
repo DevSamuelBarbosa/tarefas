@@ -70,7 +70,7 @@ export default function TarefaDetalhe() {
 					break
 			}
 
-			toast.success(`Tarefa ${acaoStr} com sucesso`)
+			toast.success(`Tarefa ${acaoStr} com sucesso!`)
 			setTarefa((prev: any) => {
 				let novoTempoTotal = prev.tempo_total
 
@@ -157,7 +157,7 @@ export default function TarefaDetalhe() {
 
 	return (
 		<div className="min-h-screen bg-slate-900 text-white">
-			<Header />
+			<Header titulo='Tarefa' />
 			<DialogConfirmarExclusaoTarefa
 				aberto={dialogAberto}
 				titulo="Remover tarefa"
@@ -168,31 +168,41 @@ export default function TarefaDetalhe() {
 				}}
 				onCancelar={() => setDialogAberto(false)}
 			/>
-			<div className="max-w-6xl mx-auto mt-10 flex flex-col gap-4">
-				<Link href="/painel" className="w-fit flex items-center gap-2 font-semibold text-white text-sm px-2 py-1 rounded bg-orange-500 hover:bg-orange-600 cursor-pointer transition duration-200">
-					<ArrowLeft size={14} /> Voltar
-				</Link>
+			<div className="max-w-6xl p-6 mx-auto flex flex-col gap-4">
+                <div className='flex items-center justify-between gap-2'>
+                    <Link href="/painel" className="w-fit flex items-center gap-2 font-semibold text-white text-sm px-2 py-1 rounded bg-orange-500 hover:bg-orange-600 cursor-pointer transition duration-200">
+                        <ArrowLeft size={14} /> Voltar
+                    </Link>
+                    
+                    <span className={`text-base font-semibold px-2 py-1 rounded ${statusEstilizacao(tarefa.status)}`}>
+                        {textoStatus(tarefa.status)}
+                    </span>
+                </div>
 
-				<div className="flex flex-col gap-4 bg-slate-800 rounded-xl p-6 shadow-md">
+				<div className="flex flex-col gap-4 bg-slate-800 rounded-xl p-4 lg:p-6 shadow-md">
 					<div className="flex justify-between items-start gap-4">
 						<div className="flex-1">
+                            <label className="block text-sm mb-1">Título</label>
 							<input
 								value={titulo}
 								onChange={(e) => setTitulo(e.target.value)}
-								className="bg-slate-700 text-white font-bold text-xl p-2 rounded w-full outline-none"
+                                placeholder="Título da tarefa"
+                                maxLength={256}
+								className="bg-slate-700 text-white text-sm lg:text-base p-2 rounded w-full outline-none"
 							/>
 						</div>
+                    </div>
 
-						<span className={`text-base font-semibold px-2 py-1 rounded ${statusEstilizacao(tarefa.status)}`}>
-							{textoStatus(tarefa.status)}
-						</span>
-					</div>
-
-					<textarea
-						value={descricao}
-						onChange={(e) => setDescricao(e.target.value)}
-						className="bg-slate-700 text-white text-base p-2 rounded resize-none min-h-[100px] outline-none"
-					/>
+                    <div className='w-full'>
+                        <label className="block text-sm mb-1">Descrição</label>
+                        <textarea
+                            value={descricao}
+                            onChange={(e) => setDescricao(e.target.value)}
+                            placeholder="Descrição da tarefa"
+                            maxLength={2000}
+                            className="w-full bg-slate-700 text-white text-xs lg:text-sm p-2 leading-6 lg:leading-5 rounded resize-none min-h-[50vh] lg:min-h-[30vh] outline-none"
+                        />
+                    </div>
 
 					{editado && (
 						<div className="flex justify-end">
@@ -203,12 +213,12 @@ export default function TarefaDetalhe() {
 					)}
 
 
-					<div className="flex flex-col sm:flex-row gap-6 border-t border-slate-700 pt-4 mt-4 text-sm text-slate-300">
-						<p>Tempo total: <span className="text-white font-semibold">{formatarTempo(tarefa.tempo_total)}</span></p>
-						<p>Criada em: <span className="text-white font-semibold">{formatarData(tarefa.criada_em)}</span></p>
-						<p>Atualizada em: <span className="text-white font-semibold">{formatarData(tarefa.atualizada_em)}</span></p>
+					<div className="flex flex-col sm:flex-row gap-4 lg:gap-6 border-t border-slate-700 pt-4 mt-4 text-xs lg:text-sm text-slate-300">
+						<p>Tempo total: <span className="text-white text-xs lg:text-sm font-semibold">{formatarTempo(tarefa.tempo_total)}</span></p>
+						<p>Criada em: <span className="text-white text-xs lg:text-sm font-semibold">{formatarData(tarefa.criada_em)}</span></p>
+						<p>Atualizada em: <span className="text-white text-xs lg:text-sm font-semibold">{formatarData(tarefa.atualizada_em)}</span></p>
 						{tarefa.status === 'concluída' && (
-							<p>Concluída em: <span className="text-white font-semibold">{formatarData(tarefa.finalizada_em)}</span></p>
+							<p>Concluída em: <span className="text-white text-xs lg:text-sm font-semibold">{formatarData(tarefa.finalizada_em)}</span></p>
 						)}
 					</div>
 

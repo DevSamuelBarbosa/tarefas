@@ -34,6 +34,7 @@ export default function CadastrarTarefa() {
 			toast.success('Tarefa cadastrada com sucesso!', { duration: 4000 })
 			router.push(`/tarefas/${novaTarefa.id}`)
 		} catch (err: any) {
+            console.log(err)
 			setErro(err?.response?.data?.error || 'Erro ao cadastrar tarefa')
 		} finally {
 			setCarregando(false)
@@ -42,17 +43,17 @@ export default function CadastrarTarefa() {
 
 	return (
 		<div className="min-h-screen bg-slate-900 text-white">
-			<Header />
+			<Header titulo='Cadastrar tarefa'/>
 
-			<div className="max-w-6xl mx-auto mt-10 flex flex-col gap-4">
+			<div className="max-w-6xl mx-auto p-6 flex flex-col gap-4">
 				<Link href="/painel" className="w-fit flex items-center gap-2 font-semibold text-white text-sm px-2 py-1 rounded bg-orange-500 hover:bg-orange-600 cursor-pointer transition duration-200">
 					<ArrowLeft size={14} /> Voltar
 				</Link>
 
 
-				<div className="flex flex-col gap-4 bg-slate-800 rounded-xl shadow-md p-6">
+				<div className="flex flex-col gap-4 bg-slate-800 rounded-xl shadow-md p-4 lg:p-6">
 					<div className="flex justify-start items-center">
-						<h1 className="text-2xl font-bold m-0">Cadastrar Tarefa</h1>
+						<h1 className="text-lg lg:text-2xl font-bold m-0">Cadastrar Tarefa</h1>
 					</div>
 
 					<form onSubmit={handleCadastro} className="space-y-6">
@@ -63,7 +64,9 @@ export default function CadastrarTarefa() {
 								value={titulo}
 								onChange={(e) => setTitulo(e.target.value)}
 								required
-								className="w-full p-3 rounded border border-slate-600 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                maxLength={256}
+                                placeholder="Título da tarefa"
+								className="w-full p-2 rounded border border-slate-600 bg-slate-700 text-white text-base lg:text-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
 							/>
 						</div>
 
@@ -74,7 +77,9 @@ export default function CadastrarTarefa() {
 								onChange={(e) => setDescricao(e.target.value)}
 								required
 								rows={5}
-								className="w-full p-3 rounded border border-slate-600 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+                                maxLength={2000}
+                                placeholder="Descrição da tarefa"
+								className="w-full p-2 rounded border border-slate-600 bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none min-h-[50vh] lg:min-h-[30vh] outline-none"
 							/>
 						</div>
 
