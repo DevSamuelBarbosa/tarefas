@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import api from '@/utils/api'
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Filter, Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import Header from '@/components/Header'
 import Link from 'next/link'
 import { formatarData, formatarTempo, statusEstilizacao, textoStatus } from '@/utils/utils'
+import DialogFiltrosTarefas from '@/components/DialogFiltrosTarefas'
 
 
 interface Tarefa {
@@ -23,6 +24,11 @@ export default function Painel() {
 	const router = useRouter()
 	const [tarefas, setTarefas] = useState<Tarefa[]>([])
 	const [carregando, setCarregando] = useState(true)
+    const [filtrosListagemTarefas, setFiltrosListagemTarefas] = useState(false)
+    const [statusFiltro, setStatusFiltro] = useState('')
+    const [criadaEmFiltro, setCriadaEmFiltro] = useState('')
+    const [finalizadaEmFiltro, setFinalizadaEmFiltro] = useState('')
+
 
 	const carregarTarefas = async () => {
 		try {
@@ -35,6 +41,22 @@ export default function Painel() {
 		}
 	}
 
+    const aplicarFiltros = async () => {
+        try {
+            const params: any = {}
+            if (statusFiltro) params.status = statusFiltro
+            if (criadaEmFiltro) params.criadaEm = criadaEmFiltro
+            if (finalizadaEmFiltro) params.finalizadaEm = finalizadaEmFiltro
+
+            const response = await api.get('/tarefas', { params })
+            setTarefas(response.data)
+            setFiltrosListagemTarefas(false)
+        } catch (error) {
+            toast.error('Erro ao aplicar filtros.')
+        }
+    }
+
+
 	useEffect(() => {
 		carregarTarefas()
 	}, [])
@@ -42,15 +64,32 @@ export default function Painel() {
 	return (
 		<>
 			<Header titulo='Painel'/>
+            <DialogFiltrosTarefas
+                aberto={filtrosListagemTarefas}
+                status={statusFiltro}
+                criadaEm={criadaEmFiltro}
+                finalizadaEm={finalizadaEmFiltro}
+                onChangeStatus={setStatusFiltro}
+                onChangeCriadaEm={setCriadaEmFiltro}
+                onChangeFinalizadaEm={setFinalizadaEmFiltro}
+                onFechar={() => setFiltrosListagemTarefas(false)}
+                onFiltrar={aplicarFiltros}
+            />
+
 			<div className="min-h-screen bg-slate-900 p-6 text-white">
 				<div className="max-w-6xl mx-auto">
 					<div className="flex items-center justify-between mb-6">
 						<h1 className="text-2xl font-bold">Minhas tarefas</h1>
-						<button onClick={() => router.push('/tarefas/cadastrar')}
-							className="flex items-center gap-2 font-semibold text-white text-sm px-2 py-1 rounded bg-orange-500 hover:bg-orange-600 cursor-pointer transition duration-200">
-							<Plus size={14} />
-							Nova tarefa
-						</button>
+                        <div className='flex flex-row justify-end gap-4 items-stretch'>
+                            <button onClick={() => setFiltrosListagemTarefas(true)} className="bg-slate-700 text-white p-1 rounded cursor-pointer hover:bg-slate-600 transition" aria-label="Abrir filtros">
+                                <Filter size={24} />
+                            </button>
+                            <button onClick={() => router.push('/tarefas/cadastrar')}
+                                className="flex items-center gap-2 font-semibold text-white text-sm px-2 py-1 rounded bg-orange-500 hover:bg-orange-600 cursor-pointer transition duration-200">
+                                <Plus size={14} />
+                                Nova tarefa
+                            </button>
+                        </div>
 					</div>
 
 					{carregando ? (
