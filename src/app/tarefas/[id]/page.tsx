@@ -97,10 +97,22 @@ export default function TarefaDetalhe() {
 
 		} catch (err: unknown) {
 			let mensagemErro = 'Erro ao atualizar status da tarefa'
-            if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
-                mensagemErro = (err as any).response.data.error
+            if (
+                typeof err === 'object' &&
+                err !== null &&
+                'response' in err &&
+                typeof (err as any).response === 'object' &&
+                'data' in (err as any).response &&
+                typeof (err as any).response.data === 'object' &&
+                'error' in (err as any).response.data
+            ) {
+                const errorObj = err as {
+                response: { data: { error?: string } };
+                };
+                mensagemErro = errorObj.response.data.error || mensagemErro;
             }
-			toast.error(mensagemErro)
+
+            toast.error(mensagemErro);
 		}
 	}
 
@@ -114,8 +126,19 @@ export default function TarefaDetalhe() {
 			router.push('/painel')
 		} catch(err: unknown) {
 			let mensagemErro = 'Erro ao remover tarefa'
-            if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
-                mensagemErro = (err as any).response.data.error
+            if (
+                typeof err === 'object' &&
+                err !== null &&
+                'response' in err &&
+                typeof (err as any).response === 'object' &&
+                'data' in (err as any).response &&
+                typeof (err as any).response.data === 'object' &&
+                'error' in (err as any).response.data
+            ) {
+                const errorObj = err as {
+                response: { data: { error?: string } };
+                };
+                mensagemErro = errorObj.response.data.error || mensagemErro;
             }
 			toast.error(mensagemErro)
 		}
@@ -134,12 +157,15 @@ export default function TarefaDetalhe() {
 			setEditado(false)
 
 			toast.success('Alterações salvas com sucesso!')
-			setTarefa((prev: any) => ({
-				...prev,
-				titulo,
-				descricao,
-				atualizada_em: new Date().toISOString()
-			}))
+			setTarefa((prev: Tarefa | null) => {
+				if (!prev) return prev
+				return {
+					...prev,
+					titulo,
+					descricao,
+					atualizada_em: new Date().toISOString()
+				}
+			})
 
 		} catch (error) {
 			console.error('Erro ao salvar alterações:', error)
