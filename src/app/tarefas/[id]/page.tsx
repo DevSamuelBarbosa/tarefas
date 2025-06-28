@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { formatarData, formatarTempo, statusEstilizacao, textoStatus } from '@/utils/utils'
 import DialogConfirmarExclusaoTarefa from '@/components/DialogConfirmarExclusaoTarefa'
 import { Tarefa } from '@/types/tarefa'
+import { AxiosError } from 'axios';
 
 export default function TarefaDetalhe() {
 
@@ -97,19 +98,9 @@ export default function TarefaDetalhe() {
 
 		} catch (err: unknown) {
 			let mensagemErro = 'Erro ao atualizar status da tarefa'
-            if (
-                typeof err === 'object' &&
-                err !== null &&
-                'response' in err &&
-                typeof (err as any).response === 'object' &&
-                'data' in (err as any).response &&
-                typeof (err as any).response.data === 'object' &&
-                'error' in (err as any).response.data
-            ) {
-                const errorObj = err as {
-                response: { data: { error?: string } };
-                };
-                mensagemErro = errorObj.response.data.error || mensagemErro;
+           
+            if (err instanceof AxiosError && err.response?.data?.error) {
+                mensagemErro = err.response.data.error;
             }
 
             toast.error(mensagemErro);
@@ -126,19 +117,8 @@ export default function TarefaDetalhe() {
 			router.push('/painel')
 		} catch(err: unknown) {
 			let mensagemErro = 'Erro ao remover tarefa'
-            if (
-                typeof err === 'object' &&
-                err !== null &&
-                'response' in err &&
-                typeof (err as any).response === 'object' &&
-                'data' in (err as any).response &&
-                typeof (err as any).response.data === 'object' &&
-                'error' in (err as any).response.data
-            ) {
-                const errorObj = err as {
-                response: { data: { error?: string } };
-                };
-                mensagemErro = errorObj.response.data.error || mensagemErro;
+            if (err instanceof AxiosError && err.response?.data?.error) {
+                mensagemErro = err.response.data.error;
             }
 			toast.error(mensagemErro)
 		}
