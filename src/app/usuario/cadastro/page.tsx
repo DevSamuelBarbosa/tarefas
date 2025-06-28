@@ -5,6 +5,7 @@ import api from '@/utils/api'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { AxiosError } from 'axios'
 
 
 export default function CadastroUsuario() {
@@ -56,9 +57,9 @@ export default function CadastroUsuario() {
 			toast.success(`Usuário ${nome} foi cadastrado com sucesso!`, { duration: 5000 })
 			router.push('/usuario/login')
 		} catch (err: unknown) {
-			if (err && typeof err === 'object' && 'response' in err) {
-				const axiosError = err as { response?: { data?: { error?: string } } };
-				setErro(axiosError.response?.data?.error || 'Erro ao cadastrar usuário');
+            console.log('Erro ao cadastrar usuário:', err)
+			if (err instanceof AxiosError && err.response?.data?.error) {
+				setErro(err.response.data.error);
 			} else {
 				setErro('Erro ao cadastrar usuário');
 			}

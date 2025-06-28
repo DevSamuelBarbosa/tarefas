@@ -5,6 +5,7 @@ import api from '@/utils/api'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { AxiosError } from 'axios'
 
 export default function LoginUsuario() {
 	const router = useRouter()
@@ -45,9 +46,9 @@ export default function LoginUsuario() {
 			toast.success('Seja bem-vindo!', { duration: 5000 })
 			router.push('/painel')
 		} catch (err: unknown) {
-			if (err && typeof err === 'object' && 'response' in err) {
-				const axiosError = err as { response?: { data?: { error?: string } } };
-				setErro(axiosError.response?.data?.error || 'Erro ao fazer login');
+            console.log('Erro ao fazer login:', err)
+			if (err instanceof AxiosError && err.response?.data?.error) {
+				setErro(err.response.data.error);
 			} else {
 				setErro('Erro ao fazer login');
 			}
