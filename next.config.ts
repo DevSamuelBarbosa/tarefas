@@ -7,8 +7,8 @@ const nextConfig: NextConfig = {
     images: {
         unoptimized: true,
     },
-    basePath: ambiente ? "/templateadv" : '',
-    assetPrefix: ambiente ? "/templateadv" : '',
+    basePath: ambiente ? "/tarefas" : '',
+    assetPrefix: ambiente ? "/tarefas" : '',
     trailingSlash: true,
 };
 
