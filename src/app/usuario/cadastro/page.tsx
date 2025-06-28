@@ -26,7 +26,7 @@ export default function CadastroUsuario() {
 		} else {
 			setVerificandoAuth(false) // libera a tela se não estiver logado
 		}
-	}, [])
+	}, [router])
 
 	if (verificandoAuth) {
 		return (
@@ -55,8 +55,13 @@ export default function CadastroUsuario() {
 			await api.post('/auth/registro', { nome, email, senha })
 			toast.success(`Usuário ${nome} foi cadastrado com sucesso!`, { duration: 5000 })
 			router.push('/usuario/login')
-		} catch (err: any) {
-			setErro(err?.response?.data?.error || 'Erro ao cadastrar usuário')
+		} catch (err: unknown) {
+			if (err && typeof err === 'object' && 'response' in err) {
+				const axiosError = err as { response?: { data?: { error?: string } } };
+				setErro(axiosError.response?.data?.error || 'Erro ao cadastrar usuário');
+			} else {
+				setErro('Erro ao cadastrar usuário');
+			}
 		} finally {
 			setCarregando(false)
 		}

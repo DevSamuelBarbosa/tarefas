@@ -12,9 +12,21 @@ import { formatarData, formatarTempo, statusEstilizacao, textoStatus } from '@/u
 import DialogConfirmarExclusaoTarefa from '@/components/DialogConfirmarExclusaoTarefa'
 
 export default function TarefaDetalhe() {
+    interface Tarefa {
+        id: number;
+        titulo: string;
+        descricao?: string;
+        status: string;
+        criada_em: string;
+        atualizada_em: string;
+        finalizada_em?: string;
+        iniciada_em?: string;
+        tempo_total: number;
+    }
+
 	const { id } = useParams()
 	const router = useRouter()
-	const [tarefa, setTarefa] = useState<any>(null)
+	const [tarefa, setTarefa] = useState<Tarefa | null>(null)
 	const [carregando, setCarregando] = useState(true)
 	const [dialogAberto, setDialogAberto] = useState(false)
     const [titulo, setTitulo] = useState('')
@@ -217,7 +229,7 @@ export default function TarefaDetalhe() {
 						<p>Tempo total: <span className="text-white text-xs lg:text-sm font-semibold">{formatarTempo(tarefa.tempo_total)}</span></p>
 						<p>Criada em: <span className="text-white text-xs lg:text-sm font-semibold">{formatarData(tarefa.criada_em)}</span></p>
 						<p>Atualizada em: <span className="text-white text-xs lg:text-sm font-semibold">{formatarData(tarefa.atualizada_em)}</span></p>
-						{tarefa.status === 'concluída' && (
+						{tarefa.status === 'concluída' && tarefa.finalizada_em && (
 							<p>Concluída em: <span className="text-white text-xs lg:text-sm font-semibold">{formatarData(tarefa.finalizada_em)}</span></p>
 						)}
 					</div>

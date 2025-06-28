@@ -23,7 +23,7 @@ export default function LoginUsuario() {
 		} else {
 			setVerificandoAuth(false) // libera a tela se não estiver logado
 		}
-	}, [])
+	}, [router])
 
 	if (verificandoAuth) {
 		return (
@@ -44,8 +44,13 @@ export default function LoginUsuario() {
 			localStorage.setItem('token', token)
 			toast.success('Seja bem-vindo!', { duration: 5000 })
 			router.push('/painel')
-		} catch (err: any) {
-			setErro(err?.response?.data?.error || 'Erro ao fazer login')
+		} catch (err: unknown) {
+			if (err && typeof err === 'object' && 'response' in err) {
+				const axiosError = err as { response?: { data?: { error?: string } } };
+				setErro(axiosError.response?.data?.error || 'Erro ao fazer login');
+			} else {
+				setErro('Erro ao fazer login');
+			}
 		} finally {
 			setCarregando(false)
 		}

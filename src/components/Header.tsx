@@ -16,12 +16,13 @@ export default function Header({ titulo }: { titulo: string }) {
 				const response = await api.get('/auth/usuariologado')
 				setNome(response.data.nome)
 			} catch (err) {
+                console.error('Erro ao buscar usuário:', err)
 				router.push('/usuario/login')
 			}
 		}
 
 		fetchUsuario()
-	}, [])
+	}, [router])
 
 	const sair = () => {
 		localStorage.removeItem('token')

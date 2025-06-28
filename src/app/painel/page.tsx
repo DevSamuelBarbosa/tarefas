@@ -35,7 +35,7 @@ export default function Painel() {
 			const response = await api.get('/tarefas')
 			setTarefas(response.data)
 		} catch (error) {
-			toast.error('Não foi possível carregar as tarefas.')
+			toast.error('Não foi possível carregar as tarefas. Error: ' + (error as Error).message)
 		} finally {
 			setCarregando(false)
 		}
@@ -43,7 +43,7 @@ export default function Painel() {
 
     const aplicarFiltros = async () => {
         try {
-            const params: any = {}
+            const params: Record<string, unknown> = {}
             if (statusFiltro) params.status = statusFiltro
             if (criadaEmFiltro) params.criadaEm = criadaEmFiltro
             if (finalizadaEmFiltro) params.finalizadaEm = finalizadaEmFiltro
@@ -52,7 +52,7 @@ export default function Painel() {
             setTarefas(response.data)
             setFiltrosListagemTarefas(false)
         } catch (error) {
-            toast.error('Erro ao aplicar filtros.')
+            toast.error('Erro ao aplicar filtros. Error: ' + (error as Error).message)
         }
     }
 

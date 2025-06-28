@@ -33,9 +33,13 @@ export default function CadastrarTarefa() {
 			const novaTarefa = response.data
 			toast.success('Tarefa cadastrada com sucesso!', { duration: 4000 })
 			router.push(`/tarefas/${novaTarefa.id}`)
-		} catch (err: any) {
-            console.log(err)
-			setErro(err?.response?.data?.error || 'Erro ao cadastrar tarefa')
+		} catch (err: unknown) {
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: { error?: string } } };
+                setErro(axiosError.response?.data?.error || 'Erro ao cadastrar tarefa');
+            } else {
+                setErro('Erro ao cadastrar tarefa');
+            }
 		} finally {
 			setCarregando(false)
 		}
