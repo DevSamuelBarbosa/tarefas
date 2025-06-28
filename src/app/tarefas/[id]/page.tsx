@@ -10,19 +10,9 @@ import Header from '@/components/Header'
 import Link from 'next/link'
 import { formatarData, formatarTempo, statusEstilizacao, textoStatus } from '@/utils/utils'
 import DialogConfirmarExclusaoTarefa from '@/components/DialogConfirmarExclusaoTarefa'
+import { Tarefa } from '@/types/tarefa'
 
 export default function TarefaDetalhe() {
-    interface Tarefa {
-        id: number;
-        titulo: string;
-        descricao?: string;
-        status: string;
-        criada_em: string;
-        atualizada_em: string;
-        finalizada_em?: string;
-        iniciada_em?: string;
-        tempo_total: number;
-    }
 
 	const { id } = useParams()
 	const router = useRouter()
@@ -83,7 +73,10 @@ export default function TarefaDetalhe() {
 			}
 
 			toast.success(`Tarefa ${acaoStr} com sucesso!`)
-			setTarefa((prev: any) => {
+
+			setTarefa((prev: Tarefa | null) => {
+				if (!prev) return prev
+
 				let novoTempoTotal = prev.tempo_total
 
 				// Supondo que prev.iniciada_em armazene o último momento em que a tarefa foi iniciada
@@ -98,18 +91,15 @@ export default function TarefaDetalhe() {
 					status: acaoStr,
 					tempo_total: novoTempoTotal,
 					atualizada_em: new Date().toISOString(),
-					// Se iniciar, atualize iniciada_em
-					...(acao === 'iniciar' ? { iniciada_em: new Date().toISOString() } : {}),
-					// Se pausar ou concluir, zere iniciada_em
-					...(acao !== 'iniciar' ? { iniciada_em: null } : {}),
+					iniciada_em: acao === 'iniciar' ? new Date().toISOString() : undefined,
 				}
 			})
 
-		} catch (err) {
+		} catch (err: unknown) {
 			let mensagemErro = 'Erro ao atualizar status da tarefa'
-			if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
-				mensagemErro = (err as any).response.data.error
-			}
+            if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+                mensagemErro = (err as any).response.data.error
+            }
 			toast.error(mensagemErro)
 		}
 	}
@@ -122,11 +112,11 @@ export default function TarefaDetalhe() {
 			})
 			toast.success('Tarefa removida com sucesso!')
 			router.push('/painel')
-		} catch(err) {
+		} catch(err: unknown) {
 			let mensagemErro = 'Erro ao remover tarefa'
-			if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
-				mensagemErro = (err as any).response.data.error
-			}
+            if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'error' in err.response.data) {
+                mensagemErro = (err as any).response.data.error
+            }
 			toast.error(mensagemErro)
 		}
 	}

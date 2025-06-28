@@ -9,16 +9,8 @@ import Header from '@/components/Header'
 import Link from 'next/link'
 import { formatarData, formatarTempo, statusEstilizacao, textoStatus } from '@/utils/utils'
 import DialogFiltrosTarefas from '@/components/DialogFiltrosTarefas'
+import { Tarefa } from '@/types/tarefa'
 
-
-interface Tarefa {
-	id: string
-	titulo: string
-	descricao?: string
-	status: string
-	criada_em: string
-    tempo_total: number
-}
 
 export default function Painel() {
 	const router = useRouter()
